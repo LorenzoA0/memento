@@ -68,7 +68,7 @@ with app.app_context():
     # U slucaju da ne postoji admin user, kreiraj ga
     if not User.query.filter_by(username='admin').first():
         admin = User(username='admin', email='admin@memento.com', role='admin')
-        admin.set_password('memento_admin')
+        admin.set_password('admin')
         db.session.add(admin)
         db.session.commit()
 
