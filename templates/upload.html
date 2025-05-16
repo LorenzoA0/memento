@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    <h1 class="cent-text">Upload Photo</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="photo">Photo</label>
+            <input type="file" id="photo" name="photo" accept="image/*" required>
+        </div>
+        <div class="form-group">
+            <label for="caption">Caption</label>
+            <input type="text" id="caption" name="caption" placeholder="Enter a caption">
+        </div>
+        <button type="submit">Upload</button>
+    </form>
+</div>
+{% endblock %}

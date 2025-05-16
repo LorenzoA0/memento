@@ -32,7 +32,6 @@ body {
     padding: 0 2rem;
 }
 
-/* za logo i admin role u slucaju koriscenja admin naloga*/
 .nav-left {
     display: flex;
     align-items: center;
@@ -55,7 +54,6 @@ body {
     font-size: 0.9rem;
 }
 
-/* centriranje 'your feed' na nav bar */
 .nav-center {
     position: absolute;
     left: 50%;
@@ -329,3 +327,17 @@ button:hover {
     margin: 10px 0 30px 105px;
 }
 
+.upload-button {
+    display: inline-block;
+    background: #1877f2;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+.upload-button:hover {
+    background: #166fe5;
+}

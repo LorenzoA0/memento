@@ -13,18 +13,15 @@
                 <a href="#" class="edit-profile-btn">Edit Profile</a>
             {% endif %}
         </div>
-
-        <!-- Broj objava -->
         <div class="post-count">
             {{ posts|length }} Mementos
         </div>
 
-        <!-- Grid za objave -->
         <div class="posts-grid">
             {% if posts %}
                 {% for post in posts %}
                     <div class="post-card">
-                        <img src="{{ url_for('static', filename='images/empty.png') }}" alt="Post image" class="post-image">
+                        <img src="{{ url_for('get_photo', post_id=post.id) }}" alt="Post image" class="post-image">
                         <div class="post-details">
                             <p class="post-caption">{{ post.caption }}</p>
                             <div class="post-stats">

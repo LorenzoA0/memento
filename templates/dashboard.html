@@ -5,12 +5,22 @@
 {% endblock %}
 
 {% block content %}
-    <!-- popup za welcome-->
-    <div id="welcome-popup" class="welcome-popup">
-        Welcome, {{ session.username }}!
+<div class="dashboard-content">
+    <div class="upload-button-container" style="text-align: right; margin-bottom: 1rem;">
+        <a href="{{ url_for('upload_photo') }}" class="upload-button" style="background: #1877f2; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">Upload</a>
     </div>
 
-    <div class="dashboard-content">
-        <!-- ovdje ce se ispisati objave itd. -->
-    </div>
+    {% for post in posts %}
+        <div class="post-card">
+            <img src="{{ url_for('get_photo', post_id=post.id) }}" alt="Post image" class="post-image">
+            <div class="post-details">
+                <p class="post-caption">{{ post.caption }}</p>
+                <div class="post-stats">
+                    <span>Likes: {{ post.likes|length }}</span>
+                    <span>Comments: {{ post.comments|length }}</span>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

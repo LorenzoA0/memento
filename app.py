@@ -1,7 +1,8 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session
+from flask import Flask, render_template, redirect, url_for, request, flash, session, send_file
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from io import BytesIO
 
 app = Flask(__name__)
 app.secret_key = 'key'
@@ -31,7 +32,7 @@ class User(db.Model):
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    image_url = db.Column(db.String(500), nullable=False)
+    photo = db.Column(db.LargeBinary, nullable=False)  # Smjestava slike u binarnom formatu u db
     caption = db.Column(db.String(200))
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -130,7 +131,8 @@ def register():
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('dashboard.html')
+    posts = Post.query.order_by(Post.date_posted.desc()).all()
+    return render_template('dashboard.html', posts=posts)
 
 @app.route('/logout')
 def logout():
@@ -149,6 +151,31 @@ def user_profile(username):
                          viewed_user=viewed_user,
                          posts=posts,
                          is_own_profile=is_own_profile)
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_photo():
+    user_id = session.get('user_id')  # Uzima id korisnika iz sesije
+    if not user_id:
+        flash('You must be logged in to upload a photo.', 'error')
+        return redirect(url_for('login'))
+
+    if request.method == 'POST' and 'photo' in request.files:
+        photo = request.files['photo'].read()  # Cita sliku kao binarne podatke
+        caption = request.form.get('caption')
+
+        # Cuvanje objave u bazu
+        new_post = Post(photo=photo, caption=caption, user_id=user_id)
+        db.session.add(new_post)
+        db.session.commit()
+
+        flash('Photo uploaded successfully!', 'success')
+        return redirect(url_for('dashboard'))
+    return render_template('upload.html')
+
+@app.route('/photo/<int:post_id>')
+def get_photo(post_id):
+    post = Post.query.get_or_404(post_id)
+    return send_file(BytesIO(post.photo), mimetype='image/jpeg')
 
 if __name__ == '__main__':
     app.run(debug=True)
