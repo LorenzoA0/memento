@@ -1,0 +1,190 @@
+/* Globalni stilovi */
+.form-container {
+    display: block !important; /* Override any conflicting styles */
+    opacity: 1 !important;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #f0f2f5;
+    min-height: 100vh;
+}
+
+/* Navigacija */
+.navbar {
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem 0;
+    position: relative;
+}
+
+.navbar .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+/* za logo i admin role u slucaju koriscenja admin naloga*/
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1877f2;
+    text-decoration: none;
+}
+
+/* badge za admin role */
+.admin-role {
+    background: #4CAF50;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+/* centriranje 'your feed' na nav bar */
+.nav-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-title {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #333;
+}
+
+/* linkovi na nav-bar */
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: #606770;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #1877f2;
+}
+
+/* Welcome popup */
+.welcome-popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(50, 50, 50, 0.9);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    opacity: 0;
+    animation: fadePopup 2s ease-in-out;
+    z-index: 1000;
+    font-weight: bold;
+}
+
+@keyframes fadePopup {
+    0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+}
+
+.cent-text {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #1877f2;
+}
+
+.main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 72px);
+}
+
+.form-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #606770;
+}
+
+input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #dddfe2;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: #1877f2;
+    box-shadow: 0 0 0 2px #e7f3ff;
+}
+
+button {
+    width: 100%;
+    padding: 0.8rem;
+    background: #1877f2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #166fe5;
+}
+
+.link {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.link a {
+    color: #1877f2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.link a:hover {
+    text-decoration: underline;
+}

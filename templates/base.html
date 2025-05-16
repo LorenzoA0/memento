@@ -1,0 +1,37 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <!-- lijevi dio nav-bara. Logo i u slucaju admin naloga prikazuje se admin role -->
+            <div class="nav-left">
+                <a href="/" class="logo">Memento</a>
+                {% if 'username' in session and session.role == 'admin' %}
+                    <span class="admin-role">Admin</span>
+                {% endif %}
+            </div>
+
+            <!-- sredina nav bara, dinamicna za prikaz "your feed" ili u slucaju ako smo nekome na profil bice ispisan username profile -->
+            <div class="nav-center">
+                {% block nav_center %}{% endblock %}
+            </div>
+
+            <!-- desna strana nav bara za login/register buttons -->
+            <div class="nav-links">
+                {% if 'username' in session %}
+                    <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+                {% else %}
+                    {% if request.path == url_for('login') %}
+                        <a href="{{ url_for('register') }}" class="nav-link">Register</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</body>

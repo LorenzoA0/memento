@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block nav_center %}
+    <h1 class="nav-title">Your Feed</h1>
+{% endblock %}
+
+{% block content %}
+    <!-- popup za welcome-->
+    <div id="welcome-popup" class="welcome-popup">
+        Welcome, {{ session.username }}! 👋
+    </div>
+
+    <div class="dashboard-content">
+        <!-- ovdje ce se ispisati objave itd. -->
+    </div>
+{% endblock %}
