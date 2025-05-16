@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'key'
@@ -15,12 +16,51 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), default='user')
+    # Relationships
+    posts = db.relationship('Post', back_populates='user', lazy=True)
+    comments = db.relationship('Comment', back_populates='user', lazy=True)
+    likes = db.relationship('Like', back_populates='user', lazy=True)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+    
+# --- Post Model (Stores Pictures) ---
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    image_url = db.Column(db.String(500), nullable=False)  # Path to uploaded image
+    caption = db.Column(db.String(200))  # Optional
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # Relationships
+    user = db.relationship('User', back_populates='posts')
+    comments = db.relationship('Comment', back_populates='post', cascade='all, delete-orphan')
+    likes = db.relationship('Like', back_populates='post', cascade='all, delete-orphan')
+
+# --- Comment Model ---
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(500), nullable=False)
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    # Relationships
+    user = db.relationship('User', back_populates='comments')
+    post = db.relationship('Post', back_populates='comments')
+
+# --- Like Model (Many-to-Many) ---
+
+class Like(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    # Relationships
+    user = db.relationship('User', back_populates='likes')
+    post = db.relationship('Post', back_populates='likes')
 
 # Kreiranje tabela
 with app.app_context():
@@ -95,6 +135,19 @@ def logout():
     session.clear()
     flash('You have been logged out', 'info')
     return redirect(url_for('login'))
+
+@app.route('/user/<username>')
+def user_profile(username):
+    viewed_user = User.query.filter_by(username=username).first_or_404()
+    posts = Post.query.filter_by(user_id=viewed_user.id).order_by(Post.date_posted.desc()).all()
+    
+    # Check if the current user is viewing their own profile
+    is_own_profile = 'user_id' in session and session['user_id'] == viewed_user.id
+    
+    return render_template('profile.html',
+                         viewed_user=viewed_user,
+                         posts=posts,
+                         is_own_profile=is_own_profile)
 
 if __name__ == '__main__':
     app.run(debug=True)

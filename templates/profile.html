@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block nav_center %}
+    <h1 class="nav-title">
+        {% if is_own_profile %}Your Profile{% else %}{{ viewed_user.username }}{% endif %}
+    </h1>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h2>{{ viewed_user.username }}</h2>
+        <p>Email: {{ viewed_user.email }}</p>
+        <p>Posts: {{ posts|length }}</p>
+    </div>
+
+    <div class="posts-grid">
+        {% if posts %}
+            {% for post in posts %}
+                <div class="post-card">
+                    <img src="{{ post.image_url }}" alt="Post image" class="post-image">
+                    <div class="post-details">
+                        <p class="post-caption">{{ post.caption }}</p>
+                        <div class="post-stats">
+                            <span>Likes: {{ post.likes|length }}</span>
+                            <span>Comments: {{ post.comments|length }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-mementos">No Mementos</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

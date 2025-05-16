@@ -18,6 +18,7 @@
             <!-- desna strana nav bara za login/register buttons -->
             <div class="nav-links">
                 {% if 'username' in session %}
+                    <a href="{{ url_for('user_profile', username=session.username) }}" class="nav-link">Profile</a>
                     <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
                 {% else %}
                     {% if request.path == url_for('login') %}

@@ -214,3 +214,61 @@ button:hover {
     text-decoration: underline;
 }
 
+/* Profile Stranica */
+.profile-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-header h2 {
+    color: #1877f2;
+    margin-bottom: 0.5rem;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.post-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.post-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.post-details {
+    padding: 1rem;
+}
+
+.post-caption {
+    color: #606770;
+    margin-bottom: 0.5rem;
+}
+
+.post-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #1877f2;
+}
+
+.no-mementos {
+    text-align: center;
+    color: #606770;
+    margin: 2rem 0;
+}
