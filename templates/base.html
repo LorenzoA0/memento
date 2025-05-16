@@ -4,7 +4,7 @@
         <div class="container">
             <!-- lijevi dio nav-bara. Logo i u slucaju admin naloga prikazuje se admin role -->
             <div class="nav-left">
-                <a href="/" class="logo">Memento</a>
+                <a href="{% if 'user_id' in session %}{{ url_for('dashboard') }}{% else %}{{ url_for('login') }}{% endif %}" class="logo">Memento</a>
                 {% if 'username' in session and session.role == 'admin' %}
                     <span class="admin-role">Admin</span>
                 {% endif %}
