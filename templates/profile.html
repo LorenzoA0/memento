@@ -3,7 +3,6 @@
 {% block content %}
 <div class="main-content profile-content">
     <div class="profile-container">
-        <!-- Profile Header -->
         <div class="profile-header">
             <div class="profile-info">
                 <img src="{{ url_for('static', filename='images/empty.png') }}" class="profile-image">
@@ -15,12 +14,12 @@
             {% endif %}
         </div>
 
-        <!-- Post Count -->
+        <!-- Broj objava -->
         <div class="post-count">
             {{ posts|length }} Mementos
         </div>
 
-        <!-- Posts Grid -->
+        <!-- Grid za objave -->
         <div class="posts-grid">
             {% if posts %}
                 {% for post in posts %}

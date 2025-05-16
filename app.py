@@ -16,7 +16,7 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), default='user')
-    # Relationships
+    # Relacije
     posts = db.relationship('Post', back_populates='user', lazy=True)
     comments = db.relationship('Comment', back_populates='user', lazy=True)
     likes = db.relationship('Like', back_populates='user', lazy=True)
@@ -27,20 +27,20 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
     
-# --- Post Model (Stores Pictures) ---
+# --- Model za objave ---
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    image_url = db.Column(db.String(500), nullable=False)  # Path to uploaded image
-    caption = db.Column(db.String(200))  # Optional
+    image_url = db.Column(db.String(500), nullable=False)
+    caption = db.Column(db.String(200))
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    # Relationships
+    # relacije
     user = db.relationship('User', back_populates='posts')
     comments = db.relationship('Comment', back_populates='post', cascade='all, delete-orphan')
     likes = db.relationship('Like', back_populates='post', cascade='all, delete-orphan')
 
-# --- Comment Model ---
+# --- Model za komentare ---
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -48,17 +48,17 @@ class Comment(db.Model):
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    # Relationships
+    # relacije
     user = db.relationship('User', back_populates='comments')
     post = db.relationship('Post', back_populates='comments')
 
-# --- Like Model (Many-to-Many) ---
+# --- Model za lajkove ---
 
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    # Relationships
+    # relacije
     user = db.relationship('User', back_populates='likes')
     post = db.relationship('Post', back_populates='likes')
 
@@ -141,7 +141,6 @@ def user_profile(username):
     viewed_user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.filter_by(user_id=viewed_user.id).order_by(Post.date_posted.desc()).all()
     
-    # Check if the current user is viewing their own profile
     is_own_profile = 'user_id' in session and session['user_id'] == viewed_user.id
     
     return render_template('profile.html',
