@@ -1,6 +1,6 @@
 /* Globalni stilovi */
 .form-container {
-    display: block !important; /* Override any conflicting styles */
+    display: block !important;
     opacity: 1 !important;
 }
 * {

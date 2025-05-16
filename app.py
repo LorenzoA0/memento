@@ -4,11 +4,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/memento_db'  # XAMPP default (no password)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/memento_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --- User Model ---
+# --- Model za user ---
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -22,17 +22,17 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-# Create tables
+# Kreiranje tabela
 with app.app_context():
     db.create_all()
-    # Create admin if not exists
+    # U slucaju da ne postoji admin user, kreiraj ga
     if not User.query.filter_by(username='admin').first():
         admin = User(username='admin', email='admin@memento.com', role='admin')
         admin.set_password('memento_admin')
         db.session.add(admin)
         db.session.commit()
 
-# --- Routes ---
+# --- Rute ---
 @app.route('/')
 def home():
     return redirect(url_for('login'))
@@ -50,7 +50,7 @@ def login():
             session['username'] = user.username
             session['role'] = user.role
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))  # You'll need to create this later
+            return redirect(url_for('dashboard'))
         else:
             flash('Invalid email or password', 'error')
 
@@ -88,7 +88,7 @@ def register():
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('dashboard.html')  # Create this template
+    return render_template('dashboard.html')
 
 @app.route('/logout')
 def logout():
