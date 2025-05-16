@@ -1,36 +1,44 @@
 {% extends "base.html" %}
 
-{% block nav_center %}
-    <h1 class="nav-title">
-        {% if is_own_profile %}Your Profile{% else %}{{ viewed_user.username }}{% endif %}
-    </h1>
-{% endblock %}
-
 {% block content %}
-<div class="profile-container">
-    <div class="profile-header">
-        <h2>{{ viewed_user.username }}</h2>
-        <p>Email: {{ viewed_user.email }}</p>
-        <p>Posts: {{ posts|length }}</p>
-    </div>
+<div class="main-content profile-content">
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-info">
+                <img src="{{ url_for('static', filename='images/empty.png') }}" class="profile-image">
+                <h1 class="profile-username">{{ viewed_user.username }}</h1>
+            </div>
+            
+            {% if is_own_profile %}
+                <a href="#" class="edit-profile-btn">Edit Profile</a>
+            {% endif %}
+        </div>
 
-    <div class="posts-grid">
-        {% if posts %}
-            {% for post in posts %}
-                <div class="post-card">
-                    <img src="{{ post.image_url }}" alt="Post image" class="post-image">
-                    <div class="post-details">
-                        <p class="post-caption">{{ post.caption }}</p>
-                        <div class="post-stats">
-                            <span>Likes: {{ post.likes|length }}</span>
-                            <span>Comments: {{ post.comments|length }}</span>
+        <!-- Post Count -->
+        <div class="post-count">
+            {{ posts|length }} Mementos
+        </div>
+
+        <!-- Posts Grid -->
+        <div class="posts-grid">
+            {% if posts %}
+                {% for post in posts %}
+                    <div class="post-card">
+                        <img src="{{ url_for('static', filename='images/empty.png') }}" alt="Post image" class="post-image">
+                        <div class="post-details">
+                            <p class="post-caption">{{ post.caption }}</p>
+                            <div class="post-stats">
+                                <span>Likes: {{ post.likes|length }}</span>
+                                <span>Comments: {{ post.comments|length }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p class="no-mementos">No Mementos</p>
-        {% endif %}
+                {% endfor %}
+            {% else %}
+                <p class="no-mementos" style="font-size: 2.5rem;margin-top:40px">No Mementos</p>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}
