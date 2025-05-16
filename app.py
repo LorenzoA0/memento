@@ -75,6 +75,8 @@ with app.app_context():
 # --- Rute ---
 @app.route('/')
 def home():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
