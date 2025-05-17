@@ -41,5 +41,31 @@
         {% block content %}
         {% endblock %}
     </div>
+    <!-- AJAX za seamless likeovanje objava -->
+    <script>
+    document.querySelectorAll('.like-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const postId = this.getAttribute('data-post-id');
+            fetch(`/like_post/${postId}`, {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    const btn = this.querySelector('.like-icon');
+                    const icon = btn.querySelector('i');
+                    const likesCount = this.parentElement.querySelector('.likes-count');
+                    if (data.liked) {
+                        btn.classList.add('liked');
+                        icon.classList.add('fa-heart');
+                        icon.classList.remove('fa-heart-o');
+                    } else {
+                        btn.classList.remove('liked');
+                        icon.classList.remove('fa-heart');
+                        icon.classList.add('fa-heart-o');
+                    }
+                    likesCount.textContent = data.likes_count;
+                });
+        });
+    });
+    </script>
 </body>
 </html>

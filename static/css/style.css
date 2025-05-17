@@ -208,9 +208,6 @@ button {
     transition: background 0.3s ease;
 }
 
-button:hover {
-    background: #166fe5;
-}
 
 .link {
     text-align: center;
@@ -252,10 +249,16 @@ button:hover {
 }
 
 .post-card {
+    margin-top: 20px;
     background: white;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 400px;
+    min-width: 400px;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
 }
 
 .post-image {
@@ -271,6 +274,9 @@ button:hover {
 .post-caption {
     color: #606770;
     margin-bottom: 0.5rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .post-stats {
@@ -278,10 +284,12 @@ button:hover {
     align-items: center; 
     gap: 10px; 
     font-size: 0.9rem;
-    color: #1877f2;
+    flex-wrap: wrap;
+    margin-top: 8px;
 }
 
 .post-author {
+    padding: 5px 0px 0px 5px;
     font-size: 1rem;
     font-weight: bold;
     margin-bottom: 0.5rem;
@@ -390,7 +398,6 @@ button:hover {
 }
 
 .like-button {
-    background: #1877f2;
     color: white;
     border: none;
     padding: 8px 12px;
@@ -401,8 +408,10 @@ button:hover {
     transition: background 0.3s ease;
 }
 
-.like-button:hover {
-    background: #166fe5;
+.like-form {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .like-button.unlike {
@@ -422,25 +431,72 @@ button:hover {
     vertical-align: middle;
 }
 
-/* like iconica*/
 .like-icon {
     background: none;
     border: none;
     cursor: pointer;
     font-size: 1.2rem;
-    color: #606770;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.3s ease;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
 }
 
-.like-icon:hover {
-    color: #1877f2;
+.like-icon i {
+    transition: color 0.3s;
+    font-size: 1.5rem;
 }
 
-.like-icon.liked {
+
+.like-icon .fa-heart-o {
+    color: #222;
+    -webkit-text-stroke: 1.5px #222;
+    background: white;
+    border-radius: 50%;
+
+}
+
+.likes-count, 
+.post-stats > span {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    line-height: normal;
+}
+
+
+.like-icon .liked .fa-heart {
     color: #f44336;
+    -webkit-text-stroke: 0px transparent;
+    background: none;
+}
+
+.like-icon.liked:hover .fa-heart {
+    color: #d32f2f;
+}
+
+.like-icon .fa-heart-o {
+    color: #fff;
+    text-shadow: 0 0 1px #333;
+}
+
+.like-icon.liked .fa-heart {
+    color: #f44336;
+    text-shadow: none;
+}
+
+.like-icon.liked:hover .fa-heart {
+    color: #d32f2f;
+}
+
+.like-icon.liked i {
+    color: #f44336;
+}
+
+.like-icon.liked:hover i {
+    color: #d32f2f;
 }
 
 .likes-count {

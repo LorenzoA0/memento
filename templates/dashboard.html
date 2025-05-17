@@ -18,13 +18,8 @@
             <div class="post-details">
                 <p class="post-caption">{{ post.caption }}</p>
                 <div class="post-stats">
-                    <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" class="like-form">
-                        {% set user_liked = false %}
-                        {% for like in post.likes %}
-                            {% if like.user_id == session['user_id'] %}
-                                {% set user_liked = true %}
-                            {% endif %}
-                        {% endfor %}
+                    <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" class="like-form" data-post-id="{{ post.id }}">
+                        {% set user_liked = post.likes|selectattr('user_id', 'equalto', session['user_id']|int)|list %}
                         <button type="submit" class="like-icon {% if user_liked %}liked{% endif %}">
                             <i class="fa {% if user_liked %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
                         </button>
