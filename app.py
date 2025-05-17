@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session, send_file
+from flask import Flask, render_template, redirect, url_for, request, flash, session, send_file, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -17,7 +17,7 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), default='user')
-    avatar = db.Column(db.LargeBinary, nullable=True)  # Store avatar as binary data
+    avatar = db.Column(db.LargeBinary(length=(2**32)-1), nullable=True)
     # relacije
     posts = db.relationship('Post', back_populates='user', lazy=True)
     comments = db.relationship('Comment', back_populates='user', lazy=True)
@@ -172,6 +172,7 @@ def upload_photo():
         db.session.commit()
 
         flash('Photo uploaded successfully!', 'success')
+        # Provera odakle je upload
         return redirect(url_for('dashboard'))
     return render_template('upload.html')
 
@@ -193,37 +194,37 @@ def delete_post(post_id):
         flash('You are not authorized to delete this post.', 'error')
         return redirect(url_for('dashboard'))
 
-    # Izbrisi objavu
+    # brisanje postova
     db.session.delete(post)
     db.session.commit()
     flash('Post deleted successfully!', 'success')
+
+    # vraca na profil korisnika ako je post obrisan sa profila
+    from_profile = request.form.get('from_profile')
+    if from_profile:
+        return redirect(url_for('user_profile', username=from_profile))
     return redirect(url_for('dashboard'))
 
 @app.route('/like_post/<int:post_id>', methods=['POST'])
 def like_post(post_id):
     if 'user_id' not in session:
-        flash('You must be logged in to like a post.', 'error')
-        return redirect(url_for('login'))
+        return jsonify({'error': 'You must be logged in to like a post.'}), 401
 
     user_id = session['user_id']
     post = Post.query.get_or_404(post_id)
-
-    # Provjera ako je korisnik vec lajkovao post
     existing_like = Like.query.filter_by(user_id=user_id, post_id=post_id).first()
+    liked = False
 
     if existing_like:
-        # ukloni lajk
         db.session.delete(existing_like)
         db.session.commit()
-        flash('You unliked the post.', 'info')
     else:
-        # lajkuj objavu
         new_like = Like(user_id=user_id, post_id=post_id)
         db.session.add(new_like)
         db.session.commit()
-        flash('You liked the post!', 'success')
+        liked = True
 
-    return redirect(url_for('dashboard'))
+    return jsonify({'liked': liked, 'likes_count': len(post.likes)})
 
 # ruta za upload avatara
 @app.route('/upload_avatar', methods=['GET', 'POST'])
@@ -247,9 +248,9 @@ def upload_avatar():
 def get_avatar(user_id):
     user = User.query.get_or_404(user_id)
     if user.avatar:
-        return send_file(BytesIO(user.avatar), mimetype='image/jpeg') 
+        return send_file(BytesIO(user.avatar), mimetype='image/jpeg')
     else:
-        return redirect(url_for('static', filename='images/default_avatar.png'))  # defaultni avatar
+        return send_file('static/images/empty.png', mimetype='image/png')
 
 if __name__ == '__main__':
     app.run(debug=True)

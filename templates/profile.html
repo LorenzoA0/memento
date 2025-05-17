@@ -26,9 +26,21 @@
                         <div class="post-details">
                             <p class="post-caption">{{ post.caption }}</p>
                             <div class="post-stats">
-                                <span>Likes: {{ post.likes|length }}</span>
+                                <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" class="like-form" data-post-id="{{ post.id }}">
+                                    {% set user_liked = post.likes|selectattr('user_id', 'equalto', session.get('user_id', 0)|int)|list %}
+                                    <button type="submit" class="like-icon {% if user_liked %}liked{% endif %}">
+                                        <i class="fa {% if user_liked %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
+                                    </button>
+                                    <span class="likes-count">{{ post.likes|length }}</span>
+                                </form>
                                 <span>Comments: {{ post.comments|length }}</span>
                             </div>
+                            {% if post.user_id == session['user_id'] %}
+                                <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" style="margin-top: 10px;">
+                                    <input type="hidden" name="from_profile" value="{{ viewed_user.username }}">
+                                    <button type="submit" class="delete-button">Delete</button>
+                                </form>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
