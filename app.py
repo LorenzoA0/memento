@@ -33,7 +33,7 @@ class User(db.Model):
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    photo = db.Column(db.LargeBinary, nullable=False)  # Smjestava slike u binarnom formatu u db
+    photo = db.Column(db.LargeBinary(length=(2**32)-1), nullable=False)  # Smjestava slike u binarnom formatu u db
     caption = db.Column(db.String(200))
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
