@@ -17,7 +17,8 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), default='user')
-    # Relacije
+    avatar = db.Column(db.LargeBinary, nullable=True)  # Store avatar as binary data
+    # relacije
     posts = db.relationship('Post', back_populates='user', lazy=True)
     comments = db.relationship('Comment', back_populates='user', lazy=True)
     likes = db.relationship('Like', back_populates='user', lazy=True)
@@ -59,7 +60,7 @@ class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    # relacije
+    # Relationships
     user = db.relationship('User', back_populates='likes')
     post = db.relationship('Post', back_populates='likes')
 
@@ -82,6 +83,8 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -106,6 +109,7 @@ def register():
         email = request.form['email']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
+        avatar = request.files['avatar'].read() if 'avatar' in request.files else None
 
         if password != confirm_password:
             flash('Passwords do not match!', 'error')
@@ -116,7 +120,7 @@ def register():
             flash('Username or email already exists!', 'error')
             return redirect(url_for('register'))
 
-        new_user = User(username=username, email=email)
+        new_user = User(username=username, email=email, avatar=avatar)
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
@@ -154,13 +158,13 @@ def user_profile(username):
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_photo():
-    user_id = session.get('user_id')  # Uzima id korisnika iz sesije
+    user_id = session.get('user_id')  # Uzmi id korisnika iz sesije
     if not user_id:
         flash('You must be logged in to upload a photo.', 'error')
         return redirect(url_for('login'))
 
     if request.method == 'POST' and 'photo' in request.files:
-        photo = request.files['photo'].read()  # Cita sliku kao binarne podatke
+        photo = request.files['photo'].read()
         caption = request.form.get('caption')
 
         # Cuvanje objave u bazu
@@ -176,6 +180,77 @@ def upload_photo():
 def get_photo(post_id):
     post = Post.query.get_or_404(post_id)
     return send_file(BytesIO(post.photo), mimetype='image/jpeg')
+
+@app.route('/delete_post/<int:post_id>', methods=['POST'])
+def delete_post(post_id):
+    if 'user_id' not in session:
+        flash('You must be logged in to delete a post.', 'error')
+        return redirect(url_for('login'))
+
+    post = Post.query.get_or_404(post_id)
+
+    # Provjeri ako je trenutni korisnik autor objave
+    if post.user_id != session['user_id']:
+        flash('You are not authorized to delete this post.', 'error')
+        return redirect(url_for('dashboard'))
+
+    # Izbrisi objavu
+    db.session.delete(post)
+    db.session.commit()
+    flash('Post deleted successfully!', 'success')
+    return redirect(url_for('dashboard'))
+
+@app.route('/like_post/<int:post_id>', methods=['POST'])
+def like_post(post_id):
+    if 'user_id' not in session:
+        flash('You must be logged in to like a post.', 'error')
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    post = Post.query.get_or_404(post_id)
+
+    # Provjera ako je korisnik vec lajkovao post
+    existing_like = Like.query.filter_by(user_id=user_id, post_id=post_id).first()
+
+    if existing_like:
+        # ukloni lajk
+        db.session.delete(existing_like)
+        db.session.commit()
+        flash('You unliked the post.', 'info')
+    else:
+        # lajkuj objavu
+        new_like = Like(user_id=user_id, post_id=post_id)
+        db.session.add(new_like)
+        db.session.commit()
+        flash('You liked the post!', 'success')
+
+    return redirect(url_for('dashboard'))
+
+# ruta za upload avatara
+@app.route('/upload_avatar', methods=['GET', 'POST'])
+def upload_avatar():
+    if 'user_id' not in session:
+        flash('You must be logged in to upload an avatar.', 'error')
+        return redirect(url_for('login'))
+
+    user = User.query.get_or_404(session['user_id'])
+
+    if request.method == 'POST' and 'avatar' in request.files:
+        avatar = request.files['avatar'].read()
+        user.avatar = avatar
+        db.session.commit()
+        flash('Avatar uploaded successfully!', 'success')
+        return redirect(url_for('user_profile', username=user.username))
+
+    return render_template('upload_avatar.html')
+# uzima avatar iz baze
+@app.route('/avatar/<int:user_id>')
+def get_avatar(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.avatar:
+        return send_file(BytesIO(user.avatar), mimetype='image/jpeg') 
+    else:
+        return redirect(url_for('static', filename='images/default_avatar.png'))  # defaultni avatar
 
 if __name__ == '__main__':
     app.run(debug=True)

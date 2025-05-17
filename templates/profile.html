@@ -5,12 +5,13 @@
     <div class="profile-container">
         <div class="profile-header">
             <div class="profile-info">
-                <img src="{{ url_for('static', filename='images/empty.png') }}" class="profile-image">
+                <!-- prikazuje avatar iz baze podataka -->
+                <img src="{{ url_for('get_avatar', user_id=viewed_user.id) }}" class="profile-image">
                 <h1 class="profile-username">{{ viewed_user.username }}</h1>
             </div>
             
             {% if is_own_profile %}
-                <a href="#" class="edit-profile-btn">Edit Profile</a>
+                <a href="{{ url_for('upload_avatar') }}" class="edit-profile-btn">Edit Profile</a>
             {% endif %}
         </div>
         <div class="post-count">

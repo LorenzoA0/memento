@@ -2,15 +2,15 @@
 
 {% block content %}
 <div class="form-container">
-    <h1 class="cent-text">Upload Photo</h1>
+    <h1 class="cent-text">Upload a Memento</h1>
     <form method="POST" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="photo">Photo</label>
+            <label for="photo">Memento</label>
             <input type="file" id="photo" name="photo" accept="image/*" required>
         </div>
         <div class="form-group">
-            <label for="caption">Caption</label>
-            <input type="text" id="caption" name="caption" placeholder="Enter a caption">
+            <label for="caption">Description</label>
+            <input type="text" id="caption" name="caption" placeholder="Enter a description">
         </div>
         <button type="submit">Upload</button>
     </form>

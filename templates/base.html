@@ -1,24 +1,28 @@
 <html>
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="container">
-            <!-- lijevi dio nav-bara. Logo i u slucaju admin naloga prikazuje se admin role -->
+            <!-- lijeva strana nav bara -->
             <div class="nav-left">
                 <a href="{% if 'user_id' in session %}{{ url_for('dashboard') }}{% else %}{{ url_for('login') }}{% endif %}" class="logo">Memento</a>
+                {% if 'user_id' in session %}
+                    <a href="{{ url_for('upload_photo') }}" class="upload-button">Upload</a>
+                {% endif %}
                 {% if 'username' in session and session.role == 'admin' %}
                     <span class="admin-role">Admin</span>
                 {% endif %}
             </div>
 
-            <!-- sredina nav bara, dinamicna za prikaz "your feed" ili u slucaju ako smo nekome na profil bice ispisan username profile -->
+            <!-- sredina nav bara -->
             <div class="nav-center">
                 {% block nav_center %}{% endblock %}
             </div>
 
-            <!-- desna strana nav bara za login/register buttons -->
+            <!-- desna strana nav bara -->
             <div class="nav-links">
                 {% if 'username' in session %}
                     <a href="{{ url_for('user_profile', username=session.username) }}" class="nav-link">Profile</a>

@@ -38,6 +38,21 @@ body {
     gap: 15px;
 }
 
+.nav-left .upload-button {
+    background: #1877f2;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+}
+
+.nav-left .upload-button:hover {
+    background: #166fe5;
+}
+
 .logo {
     font-size: 1.5rem;
     font-weight: bold;
@@ -260,9 +275,25 @@ button:hover {
 
 .post-stats {
     display: flex;
-    gap: 1rem;
+    align-items: center; 
+    gap: 10px; 
     font-size: 0.9rem;
     color: #1877f2;
+}
+
+.post-author {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.post-author-link {
+    color: #1877f2;
+    text-decoration: none;
+}
+
+.post-author-link:hover {
+    text-decoration: underline;
 }
 
 .no-mementos {
@@ -340,4 +371,80 @@ button:hover {
 
 .upload-button:hover {
     background: #166fe5;
+}
+
+.delete-button {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+.delete-button:hover {
+    background: #d32f2f;
+}
+
+.like-button {
+    background: #1877f2;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+.like-button:hover {
+    background: #166fe5;
+}
+
+.like-button.unlike {
+    background: #f44336;
+}
+
+.like-button.unlike:hover {
+    background: #d32f2f;
+}
+
+.post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* like iconica*/
+.like-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #606770;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+}
+
+.like-icon:hover {
+    color: #1877f2;
+}
+
+.like-icon.liked {
+    color: #f44336;
+}
+
+.likes-count {
+    font-size: 1rem;
+    color: #606770;
+    vertical-align: middle;
 }
