@@ -42,8 +42,7 @@ class Post(db.Model):
     comments = db.relationship('Comment', back_populates='post', cascade='all, delete-orphan')
     likes = db.relationship('Like', back_populates='post', cascade='all, delete-orphan')
 
-# --- Model za komentare ---
-
+# --- Model za komentare ---Publish Directory
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(500), nullable=False)
