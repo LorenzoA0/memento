@@ -42,7 +42,7 @@ class Post(db.Model):
     comments = db.relationship('Comment', back_populates='post', cascade='all, delete-orphan')
     likes = db.relationship('Like', back_populates='post', cascade='all, delete-orphan')
 
-# --- Model za komentare ---Publish Directory
+# --- Model za komentare ---
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(500), nullable=False)
@@ -59,15 +59,15 @@ class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    # Relationships
+    # Relacije
     user = db.relationship('User', back_populates='likes')
     post = db.relationship('Post', back_populates='likes')
 
 # Kreiranje tabela
 with app.app_context():
     db.create_all()
-    # U slucaju da ne postoji admin user, kreiraj ga
-    if not User.query.filter_by(username='admin').first():
+    # Provjera da li postoji admin nalog
+    if not User.query.filter((User.username == 'admin') | (User.email == 'admin@memento.com')).first():
         admin = User(username='admin', email='admin@memento.com', role='admin')
         admin.set_password('admin')
         db.session.add(admin)
@@ -94,7 +94,7 @@ def login():
             session['user_id'] = user.id
             session['username'] = user.username
             session['role'] = user.role
-            flash('Login successful!', 'success')
+            flash(f'Welcome, {user.username}!', 'success')
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid email or password', 'error')
@@ -157,23 +157,31 @@ def user_profile(username):
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_photo():
-    user_id = session.get('user_id')  # Uzmi id korisnika iz sesije
+    user_id = session.get('user_id') 
     if not user_id:
         flash('You must be logged in to upload a photo.', 'error')
         return redirect(url_for('login'))
 
     if request.method == 'POST' and 'photo' in request.files:
-        photo = request.files['photo'].read()
+        photo = request.files['photo']
+
+        # Validacija tipa fajla
+        if photo.mimetype not in ['image/png', 'image/jpeg']:
+            flash('Only PNG and JPEG files are allowed.', 'error')
+            return redirect(url_for('upload_photo'))
+
+        # Citaj fajl i sacuvaj ga u bazi
+        photo_data = photo.read()
         caption = request.form.get('caption')
 
-        # Cuvanje objave u bazu
-        new_post = Post(photo=photo, caption=caption, user_id=user_id)
+        # sacuvaj post u bazi
+        new_post = Post(photo=photo_data, caption=caption, user_id=user_id)
         db.session.add(new_post)
         db.session.commit()
 
         flash('Photo uploaded successfully!', 'success')
-        # Provera odakle je upload
         return redirect(url_for('dashboard'))
+
     return render_template('upload.html')
 
 @app.route('/photo/<int:post_id>')
@@ -189,17 +197,17 @@ def delete_post(post_id):
 
     post = Post.query.get_or_404(post_id)
 
-    # Provjeri ako je trenutni korisnik autor objave
-    if post.user_id != session['user_id']:
+    # Provjera da li je korisnik vlasnik posta ili admin
+    if post.user_id != session['user_id'] and session.get('role') != 'admin':
         flash('You are not authorized to delete this post.', 'error')
         return redirect(url_for('dashboard'))
 
-    # brisanje postova
+    # Brisanje posta
     db.session.delete(post)
     db.session.commit()
     flash('Post deleted successfully!', 'success')
 
-    # vraca na profil korisnika ako je post obrisan sa profila
+    # Ako je post obrisan sa profila, redirektuj na profil
     from_profile = request.form.get('from_profile')
     if from_profile:
         return redirect(url_for('user_profile', username=from_profile))
@@ -236,13 +244,21 @@ def upload_avatar():
     user = User.query.get_or_404(session['user_id'])
 
     if request.method == 'POST' and 'avatar' in request.files:
-        avatar = request.files['avatar'].read()
-        user.avatar = avatar
+        avatar = request.files['avatar']
+
+        # Validacija tipa fajla
+        if avatar.mimetype not in ['image/png', 'image/jpeg']:
+            flash('Only PNG and JPEG files are allowed.', 'error')
+            return redirect(url_for('upload_avatar'))
+
+        # Cuvanje avatara u bazi
+        user.avatar = avatar.read()
         db.session.commit()
         flash('Avatar uploaded successfully!', 'success')
         return redirect(url_for('user_profile', username=user.username))
 
     return render_template('upload_avatar.html')
+    
 # uzima avatar iz baze
 @app.route('/avatar/<int:user_id>')
 def get_avatar(user_id):
@@ -251,6 +267,47 @@ def get_avatar(user_id):
         return send_file(BytesIO(user.avatar), mimetype='image/jpeg')
     else:
         return send_file('static/images/empty.png', mimetype='image/png')
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+    if 'user_id' not in session:
+        flash('You must be logged in to edit your profile.', 'error')
+        return redirect(url_for('login'))
+
+    user = User.query.get_or_404(session['user_id'])
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        avatar = request.files['avatar'] if 'avatar' in request.files else None
+
+        # Provjera da li je username ili email vec zauzet
+        if username != user.username and User.query.filter_by(username=username).first():
+            flash('Username is already taken. Please choose another.', 'error')
+            return redirect(url_for('edit_profile'))
+
+        if email != user.email and User.query.filter_by(email=email).first():
+            flash('Email is already in use. Please choose another.', 'error')
+            return redirect(url_for('edit_profile'))
+
+        # Azumiranje promjena
+        user.username = username
+        user.email = email
+        if password:
+            user.set_password(password)
+        if avatar and avatar.mimetype in ['image/png', 'image/jpeg']:
+            user.avatar = avatar.read()
+
+        db.session.commit()
+
+        # Azuracija novog username u sesiji
+        session['username'] = user.username
+
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('user_profile', username=user.username))
+
+    return render_template('edit_profile.html', user=user)
 
 if __name__ == '__main__':
     app.run(debug=True)

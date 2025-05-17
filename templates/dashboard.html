@@ -27,8 +27,8 @@
                     <span class="likes-count">{{ post.likes|length }}</span>
                     <span>Comments: {{ post.comments|length }}</span>
                 </div>
-                {% if post.user_id == session['user_id'] %}
-                    <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" style="margin-top: 10px;">
+                {% if post.user_id == session['user_id'] or session.get('role') == 'admin' %}
+                    <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" style="margin-top: 10px;" onsubmit="return confirmDelete();">
                         <button type="submit" class="delete-button">Delete</button>
                     </form>
                 {% endif %}

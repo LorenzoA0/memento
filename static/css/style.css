@@ -147,6 +147,22 @@ body {
     color: white;
   }
 
+#error-popup {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(244, 67, 54, 0.9);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    font-weight: bold;
+    opacity: 0;
+    animation: fadePopup 3s ease-in-out; 
+}
+
 .cent-text {
     text-align: center;
     margin-bottom: 1.5rem;

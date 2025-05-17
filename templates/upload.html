@@ -3,7 +3,7 @@
 {% block content %}
 <div class="form-container">
     <h1 class="cent-text">Upload a Memento</h1>
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" id="upload-form">
         <div class="form-group">
             <label for="photo">Memento</label>
             <input type="file" id="photo" name="photo" accept="image/*" required>
@@ -15,4 +15,27 @@
         <button type="submit">Upload</button>
     </form>
 </div>
+
+<div id="error-popup" style="display: none; background: rgba(244, 67, 54, 0.9); color: white; padding: 10px; border-radius: 5px; position: fixed; top: 20%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;">
+    Only PNG and JPEG files are allowed.
+</div>
+
+<script>
+    document.getElementById('upload-form').addEventListener('submit', function (e) {
+        const fileInput = document.getElementById('photo');
+        const file = fileInput.files[0];
+
+        if (file) {
+            const allowedTypes = ['image/png', 'image/jpeg'];
+            if (!allowedTypes.includes(file.type)) {
+                e.preventDefault(); 
+                const popup = document.getElementById('error-popup');
+                popup.style.display = 'block';
+                popup.addEventListener('animationend', () => {
+                    popup.style.display = 'none';
+                });
+            }
+        }
+    });
+</script>
 {% endblock %}

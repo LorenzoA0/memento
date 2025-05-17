@@ -5,13 +5,12 @@
     <div class="profile-container">
         <div class="profile-header">
             <div class="profile-info">
-                <!-- prikazuje avatar iz baze podataka -->
                 <img src="{{ url_for('get_avatar', user_id=viewed_user.id) }}" class="profile-image">
                 <h1 class="profile-username">{{ viewed_user.username }}</h1>
             </div>
             
             {% if is_own_profile %}
-                <a href="{{ url_for('upload_avatar') }}" class="edit-profile-btn">Edit Profile</a>
+                <a href="{{ url_for('edit_profile') }}" class="edit-profile-btn">Edit Profile</a>
             {% endif %}
         </div>
         <div class="post-count">
@@ -35,8 +34,8 @@
                                 </form>
                                 <span>Comments: {{ post.comments|length }}</span>
                             </div>
-                            {% if post.user_id == session['user_id'] %}
-                                <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" style="margin-top: 10px;">
+                            {% if post.user_id == session['user_id'] or session.get('role') == 'admin' %}
+                                <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" style="margin-top: 10px;" onsubmit="return confirmDelete();">
                                     <input type="hidden" name="from_profile" value="{{ viewed_user.username }}">
                                     <button type="submit" class="delete-button">Delete</button>
                                 </form>
