@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-content">
+    <div class="post-card">
+        <div class="post-author">
+            <img src="{{ url_for('get_avatar', user_id=post.user.id) }}" alt="Avatar" class="post-avatar">
+            <a href="{{ url_for('user_profile', username=post.user.username) }}" class="post-author-link">
+                {{ post.user.username }}
+            </a>
+        </div>
+        <img src="{{ url_for('get_photo', post_id=post.id) }}" alt="Post image" class="post-image">
+        <div class="post-details">
+            <p class="post-caption">{{ post.caption }}</p>
+            <div class="post-stats">
+                <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" class="like-form" data-post-id="{{ post.id }}">
+                    {% set user_liked = post.likes|selectattr('user_id', 'equalto', session['user_id']|int)|list %}
+                    <button type="submit" class="like-icon {% if user_liked %}liked{% endif %}">
+                        <i class="fa {% if user_liked %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
+                    </button>
+                    <span class="likes-count">{{ post.likes|length }}</span>
+                </form>
+                <span class="comment-icon-group">
+                    <svg class="comment-svg-icon" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: default; opacity: 0.5;">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span class="comments-count">{{ comments|length }}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="comments-section" style="margin-top: 30px;">
+        <h3>Comments</h3>
+        {% if session.get('user_id') %}
+        <form method="POST" class="add-comment-form" style="margin-bottom: 20px;">
+            <textarea name="comment" rows="2" style="width:100%;padding:8px;" placeholder="Add a comment..." required></textarea>
+            <button type="submit" style="margin-top:8px;">Add Comment</button>
+        </form>
+        {% else %}
+            <p><a href="{{ url_for('login') }}">Login</a> to add a comment.</p>
+        {% endif %}
+        <div class="comments-list">
+            {% for comment in comments %}
+                <div class="comment-card" style="background:#f5f6fa;padding:10px 15px;border-radius:8px;margin-bottom:10px;">
+                    <b>{{ comment.user.username }}</b>
+                    <span style="color:#888;font-size:0.9em;">{{ comment.date_posted.strftime('%Y-%m-%d %H:%M') }}</span>
+                    <div>{{ comment.text }}</div>
+                </div>
+            {% else %}
+                <p style="color:#888;">No comments yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
