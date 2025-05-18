@@ -146,7 +146,7 @@ def logout():
 @app.route('/user/<username>')
 def user_profile(username):
     if 'user_id' not in session:
-        flash('You must be logged in to edit a profile.', 'error')
+        flash('You must be logged in to view a profile.', 'error')
         return redirect(url_for('login'))
     viewed_user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.filter_by(user_id=viewed_user.id).order_by(Post.date_posted.desc()).all()
@@ -162,7 +162,7 @@ def user_profile(username):
 def upload_photo():
     user_id = session.get('user_id') 
     if 'user_id' not in session:
-        flash('You must be logged in to edit a profile.', 'error')
+        flash('You must be logged in to upload a photo.', 'error')
         return redirect(url_for('login'))
     if not user_id:
         flash('You must be logged in to upload a photo.', 'error')
@@ -272,7 +272,7 @@ def upload_avatar():
 @app.route('/avatar/<int:user_id>')
 def get_avatar(user_id):
     if 'user_id' not in session:
-        flash('You must be logged in to edit a profile.', 'error')
+        flash('You must be logged in to change an avatar.', 'error')
         return redirect(url_for('login'))
     user = User.query.get_or_404(user_id)
     if user.avatar:
@@ -328,7 +328,7 @@ def edit_profile():
 @app.route('/comments/<int:post_id>', methods=['GET', 'POST'])
 def comments_page(post_id):
     if 'user_id' not in session:
-        flash('You must be logged in to edit a profile.', 'error')
+        flash('You must be logged in to comment a profile.', 'error')
         return redirect(url_for('login'))
     post = Post.query.get_or_404(post_id)
     user = User.query.get(session['user_id']) if 'user_id' in session else None
@@ -345,8 +345,23 @@ def comments_page(post_id):
             flash('Comment added!', 'success')
             return redirect(url_for('comments_page', post_id=post.id))
 
-    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.date_posted.asc()).all()
+    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.date_posted.desc()).all()
     return render_template('comments_page.html', post=post, comments=comments)
+
+@app.route('/delete_comment/<int:comment_id>', methods=['POST'])
+def delete_comment(comment_id):
+    if 'user_id' not in session:
+        flash('You must be logged in to edit a profile.', 'error')
+        return redirect(url_for('login'))
+    comment = Comment.query.get_or_404(comment_id)
+    post_id = comment.post_id
+    if 'user_id' not in session or (comment.user_id != session['user_id'] and session.get('role') != 'admin'):
+        flash('You are not authorized to delete this comment.', 'error')
+        return redirect(url_for('comments_page', post_id=post_id))
+    db.session.delete(comment)
+    db.session.commit()
+    flash('Comment deleted.', 'success')
+    return redirect(url_for('comments_page', post_id=post_id))
 
 if __name__ == '__main__':
     app.run(debug=True)
