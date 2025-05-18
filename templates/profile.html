@@ -3,6 +3,7 @@
 {% block content %}
 <div class="main-content profile-content">
     <div class="profile-container">
+        <div class="profile-header-container">
         <div class="profile-header">
             <div class="profile-info">
                 <img src="{{ url_for('get_avatar', user_id=viewed_user.id) }}" class="profile-image">
@@ -16,7 +17,7 @@
         <div class="post-count">
             {{ posts|length }} Mementos
         </div>
-
+        </div>
         <div class="posts-grid">
             {% if posts %}
                 {% for post in posts %}
@@ -25,26 +26,32 @@
                         <div class="post-details">
                             <p class="post-caption">{{ post.caption }}</p>
                             <div class="post-stats">
-                                <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" class="like-form" data-post-id="{{ post.id }}">
-                                    {% set user_liked = post.likes|selectattr('user_id', 'equalto', session.get('user_id', 0)|int)|list %}
-                                    <button type="submit" class="like-icon {% if user_liked %}liked{% endif %}">
-                                        <i class="fa {% if user_liked %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
-                                    </button>
-                                    <span class="likes-count">{{ post.likes|length }}</span>
-                                </form>
-                                <a href="{{ url_for('comments_page', post_id=post.id) }}" class="comment-icon-group">
-                                    <svg class="comment-svg-icon" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                                    </svg>
-                                    <span class="comments-count">{{ post.comments|length }}</span>
-                                </a>
+                                <div class="stats-group">
+                                    <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" class="like-form" data-post-id="{{ post.id }}">
+                                        {% set user_liked = post.likes|selectattr('user_id', 'equalto', session.get('user_id', 0)|int)|list %}
+                                        <button type="submit" class="like-icon {% if user_liked %}liked{% endif %}">
+                                            <i class="fa {% if user_liked %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
+                                        </button>
+                                        <span class="likes-count">{{ post.likes|length }}</span>
+                                    </form>
+                                    <a href="{{ url_for('comments_page', post_id=post.id) }}" class="comment-icon-group">
+                                        <svg class="comment-svg-icon" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                        </svg>
+                                        <span class="comments-count">{{ post.comments|length }}</span>
+                                    </a>
+                                </div>
+                                {% if post.user_id == session['user_id'] or session.get('role') == 'admin' %}
+                                    <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" class="delete-post-form" onsubmit="return confirmDelete();">
+                                        {% if viewed_user %}
+                                            <input type="hidden" name="from_profile" value="{{ viewed_user.username }}">
+                                        {% endif %}
+                                        <button type="submit" class="delete-icon-btn" title="Delete">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}                                
                             </div>
-                            {% if post.user_id == session['user_id'] or session.get('role') == 'admin' %}
-                                <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" style="margin-top: 10px;" onsubmit="return confirmDelete();">
-                                    <input type="hidden" name="from_profile" value="{{ viewed_user.username }}">
-                                    <button type="submit" class="delete-button">Delete</button>
-                                </form>
-                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
