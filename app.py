@@ -145,6 +145,9 @@ def logout():
 
 @app.route('/user/<username>')
 def user_profile(username):
+    if 'user_id' not in session:
+        flash('You must be logged in to edit a profile.', 'error')
+        return redirect(url_for('login'))
     viewed_user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.filter_by(user_id=viewed_user.id).order_by(Post.date_posted.desc()).all()
     
@@ -158,6 +161,9 @@ def user_profile(username):
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_photo():
     user_id = session.get('user_id') 
+    if 'user_id' not in session:
+        flash('You must be logged in to edit a profile.', 'error')
+        return redirect(url_for('login'))
     if not user_id:
         flash('You must be logged in to upload a photo.', 'error')
         return redirect(url_for('login'))
@@ -186,6 +192,9 @@ def upload_photo():
 
 @app.route('/photo/<int:post_id>')
 def get_photo(post_id):
+    if 'user_id' not in session:
+        flash('You must be logged in to edit a profile.', 'error')
+        return redirect(url_for('login'))
     post = Post.query.get_or_404(post_id)
     return send_file(BytesIO(post.photo), mimetype='image/jpeg')
 
@@ -262,6 +271,9 @@ def upload_avatar():
 # uzima avatar iz baze
 @app.route('/avatar/<int:user_id>')
 def get_avatar(user_id):
+    if 'user_id' not in session:
+        flash('You must be logged in to edit a profile.', 'error')
+        return redirect(url_for('login'))
     user = User.query.get_or_404(user_id)
     if user.avatar:
         return send_file(BytesIO(user.avatar), mimetype='image/jpeg')
@@ -315,6 +327,9 @@ def edit_profile():
 
 @app.route('/comments/<int:post_id>', methods=['GET', 'POST'])
 def comments_page(post_id):
+    if 'user_id' not in session:
+        flash('You must be logged in to edit a profile.', 'error')
+        return redirect(url_for('login'))
     post = Post.query.get_or_404(post_id)
     user = User.query.get(session['user_id']) if 'user_id' in session else None
 
