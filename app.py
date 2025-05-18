@@ -271,10 +271,14 @@ def get_avatar(user_id):
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
     if 'user_id' not in session:
-        flash('You must be logged in to edit your profile.', 'error')
+        flash('You must be logged in to edit a profile.', 'error')
         return redirect(url_for('login'))
 
-    user = User.query.get_or_404(session['user_id'])
+    edit_user_id = request.args.get('user_id', type=int)
+    if session.get('role') == 'admin' and edit_user_id:
+        user = User.query.get_or_404(edit_user_id)
+    else:
+        user = User.query.get_or_404(session['user_id'])
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -282,16 +286,15 @@ def edit_profile():
         password = request.form.get('password')
         avatar = request.files['avatar'] if 'avatar' in request.files else None
 
-        # Provjera da li je username ili email vec zauzet
+        # Provera da li je username ili email već zauzet (osim za trenutnog usera)
         if username != user.username and User.query.filter_by(username=username).first():
             flash('Username is already taken. Please choose another.', 'error')
-            return redirect(url_for('edit_profile'))
+            return redirect(url_for('edit_profile', user_id=user.id if session.get('role') == 'admin' else None))
 
         if email != user.email and User.query.filter_by(email=email).first():
             flash('Email is already in use. Please choose another.', 'error')
-            return redirect(url_for('edit_profile'))
+            return redirect(url_for('edit_profile', user_id=user.id if session.get('role') == 'admin' else None))
 
-        # Azumiranje promjena
         user.username = username
         user.email = email
         if password:
@@ -301,13 +304,34 @@ def edit_profile():
 
         db.session.commit()
 
-        # Azuracija novog username u sesiji
-        session['username'] = user.username
+        # Ako admin menja tuđi profil, ne menja svoju sesiju
+        if session.get('role') != 'admin' or user.id == session['user_id']:
+            session['username'] = user.username
 
         flash('Profile updated successfully!', 'success')
         return redirect(url_for('user_profile', username=user.username))
 
     return render_template('edit_profile.html', user=user)
+
+@app.route('/comments/<int:post_id>', methods=['GET', 'POST'])
+def comments_page(post_id):
+    post = Post.query.get_or_404(post_id)
+    user = User.query.get(session['user_id']) if 'user_id' in session else None
+
+    if request.method == 'POST':
+        if not user:
+            flash('You must be logged in to comment.', 'error')
+            return redirect(url_for('login'))
+        text = request.form.get('comment')
+        if text:
+            new_comment = Comment(text=text, user_id=user.id, post_id=post.id)
+            db.session.add(new_comment)
+            db.session.commit()
+            flash('Comment added!', 'success')
+            return redirect(url_for('comments_page', post_id=post.id))
+
+    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.date_posted.asc()).all()
+    return render_template('comments_page.html', post=post, comments=comments)
 
 if __name__ == '__main__':
     app.run(debug=True)

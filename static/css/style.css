@@ -266,6 +266,7 @@ button {
 
 .post-card {
     margin-top: 20px;
+    margin-bottom: 20px;
     background: white;
     border-radius: 10px;
     overflow: hidden;
@@ -471,7 +472,6 @@ button {
     -webkit-text-stroke: 1.5px #222;
     background: white;
     border-radius: 50%;
-
 }
 
 .likes-count, 
@@ -519,4 +519,34 @@ button {
     font-size: 1rem;
     color: #606770;
     vertical-align: middle;
+}
+
+.comment-icon-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 10px;
+    text-decoration: none;
+}
+
+.comments-count {
+    font-size: 1rem;
+    color: #606770;
+}
+
+.comment-svg-icon {
+    width: 24px;
+    height: 24px;
+    background: white;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: content-box;
+    box-shadow: 0 0 1px #333;
+    cursor: pointer;
+}
+
+.comment-icon-group:hover .comment-svg-icon {
+    box-shadow: 0 0 8px #1877f2;
+    filter: brightness(1.2);
 }
