@@ -13,7 +13,7 @@
                     <a href="{{ url_for('upload_photo') }}" class="upload-button">Upload</a>
                 {% endif %}
                 {% if 'username' in session and session.role == 'admin' %}
-                    <span class="admin-role">Admin</span>
+                    <span class="admin-role"> <a href="{{ url_for('admin_panel') }}">Admin Panel</a></span>
                 {% endif %}
             </div>
 

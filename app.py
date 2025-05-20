@@ -18,10 +18,10 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), default='user')
     avatar = db.Column(db.LargeBinary(length=(2**32)-1), nullable=True)
-    # relacije
-    posts = db.relationship('Post', back_populates='user', lazy=True)
-    comments = db.relationship('Comment', back_populates='user', lazy=True)
-    likes = db.relationship('Like', back_populates='user', lazy=True)
+    # relacije sa cascade delete
+    posts = db.relationship('Post', back_populates='user', cascade='all, delete-orphan', lazy=True)
+    comments = db.relationship('Comment', back_populates='user', cascade='all, delete-orphan', lazy=True)
+    likes = db.relationship('Like', back_populates='user', cascade='all, delete-orphan', lazy=True)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -362,6 +362,33 @@ def delete_comment(comment_id):
     db.session.commit()
     flash('Comment deleted.', 'success')
     return redirect(url_for('comments_page', post_id=post_id))
+
+@app.route('/admin_panel', methods=['GET', 'POST'])
+def admin_panel():
+    if 'user_id' not in session or session.get('role') != 'admin':
+        flash('You are not authorized to access the admin panel.', 'error')
+        return redirect(url_for('dashboard'))
+
+    users = User.query.all()
+
+    return render_template('admin_panel.html', users=users)
+
+@app.route('/delete_user/<int:user_id>', methods=['POST'])
+def delete_user(user_id):
+    if 'user_id' not in session or session.get('role') != 'admin':
+        flash('You are not authorized to delete users.', 'error')
+        return redirect(url_for('dashboard'))
+    user = User.query.get_or_404(user_id)
+
+    # prevencija da admin obrise samog sebe
+    if user.id == session['user_id']:
+        flash('You cannot delete your own account.', 'error')
+        return redirect(url_for('admin_panel'))
+
+    db.session.delete(user)
+    db.session.commit()
+    flash(f'User {user.username} has been deleted.', 'success')
+    return redirect(url_for('admin_panel'))
 
 if __name__ == '__main__':
     app.run(debug=True)
