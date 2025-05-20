@@ -60,13 +60,23 @@ body {
     text-decoration: none;
 }
 
-/* badge za admin role */
 .admin-role {
     background: #4CAF50;
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.9rem;
+}
+
+.admin-role a {
+    color: white; 
+    text-decoration: none; 
+    cursor: pointer; 
+}
+
+.admin-role a:hover {
+    text-decoration: underline; 
+    cursor: pointer; 
 }
 
 .nav-center {
@@ -604,4 +614,74 @@ button {
 }
 .comment-card {
     position: relative;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #f0f2f5;
+}
+
+.admin-panel {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.admin-panel table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.admin-panel th, .admin-panel td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.admin-panel td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 200px;
+    vertical-align: middle; 
+    text-align: center; 
+    height: 100%; 
+}
+
+.admin-panel th {
+    text-align: center; 
+    vertical-align: middle; 
+}
+
+.admin-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.admin-username-link {
+    color: #1877f2;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.admin-username-link:hover {
+    text-decoration: underline;
 }
