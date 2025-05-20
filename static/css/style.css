@@ -425,9 +425,7 @@ button {
 .upload-button:hover {
     background: #166fe5;
 }
-
-.delete-button {
-    background: #f44336;
+.action-button {
     color: white;
     border: none;
     padding: 8px 12px;
@@ -436,9 +434,37 @@ button {
     font-size: 0.9rem;
     font-weight: bold;
     transition: background 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
 }
 
-.delete-button:hover {
+.action-button.edit {
+    background: #4CAF50;
+}
+
+.action-button.edit:hover {
+    background: #45a049;
+}
+.action-button.delete {
+    background: #f44336;
+}
+
+.action-button.delete:hover {
+    background: #d32f2f;
+}
+.button-green {
+    background: #4CAF50;
+}
+
+.button-green:hover {
+    background: #45a049;
+}
+
+.button-red {
+    background: #f44336; 
+}
+
+.button-red:hover {
     background: #d32f2f;
 }
 
