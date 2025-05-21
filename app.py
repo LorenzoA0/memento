@@ -158,6 +158,7 @@ def user_profile(username):
                          posts=posts,
                          is_own_profile=is_own_profile)
 
+# ruta za upload
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_photo():
     user_id = session.get('user_id') 
@@ -222,6 +223,7 @@ def delete_post(post_id):
         return redirect(url_for('user_profile', username=from_profile))
     return redirect(url_for('dashboard'))
 
+#ruta za like
 @app.route('/like_post/<int:post_id>', methods=['POST'])
 def like_post(post_id):
     if 'user_id' not in session:
@@ -280,6 +282,7 @@ def get_avatar(user_id):
     else:
         return send_file('static/images/empty.png', mimetype='image/png')
 
+#ruta za edit profile
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
     if 'user_id' not in session:
