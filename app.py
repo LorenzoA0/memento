@@ -33,7 +33,7 @@ class User(db.Model):
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    photo = db.Column(db.LargeBinary(length=(2**32)-1), nullable=False)  # Smjestava slike u binarnom formatu u db
+    photo = db.Column(db.LargeBinary(length=(2**32)-1), nullable=False) 
     caption = db.Column(db.String(200))
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -207,12 +207,10 @@ def delete_post(post_id):
 
     post = Post.query.get_or_404(post_id)
 
-    # Provjera da li je korisnik vlasnik posta ili admin
     if post.user_id != session['user_id'] and session.get('role') != 'admin':
         flash('You are not authorized to delete this post.', 'error')
         return redirect(url_for('dashboard'))
 
-    # Brisanje posta
     db.session.delete(post)
     db.session.commit()
     flash('Post deleted successfully!', 'success')
@@ -300,8 +298,6 @@ def edit_profile():
         email = request.form.get('email')
         password = request.form.get('password')
         avatar = request.files['avatar'] if 'avatar' in request.files else None
-
-        # Provera da li je username ili email već zauzet (osim za trenutnog usera)
         if username != user.username and User.query.filter_by(username=username).first():
             flash('Username is already taken. Please choose another.', 'error')
             return redirect(url_for('edit_profile', user_id=user.id if session.get('role') == 'admin' else None))
@@ -319,7 +315,6 @@ def edit_profile():
 
         db.session.commit()
 
-        # Ako admin menja tuđi profil, ne menja svoju sesiju
         if session.get('role') != 'admin' or user.id == session['user_id']:
             session['username'] = user.username
 
@@ -383,7 +378,6 @@ def delete_user(user_id):
         return redirect(url_for('dashboard'))
     user = User.query.get_or_404(user_id)
 
-    # prevencija da admin obrise samog sebe
     if user.id == session['user_id']:
         flash('You cannot delete your own account.', 'error')
         return redirect(url_for('admin_panel'))
