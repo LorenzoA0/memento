@@ -49,7 +49,7 @@
                     <span style="color:#888;font-size:0.9em;">{{ comment.date_posted.strftime('%Y-%m-%d %H:%M') }}</span>
                     <div>{{ comment.text }}</div>
                     {% if session.get('user_id') == comment.user_id or session.get('role') == 'admin' %}
-                        <form method="POST" action="{{ url_for('delete_comment', comment_id=comment.id) }}" class="delete-comment-form">
+                        <form method="POST" action="{{ url_for('delete_comment', comment_id=comment.id) }}" class="delete-comment-form" onsubmit="return confirmDeleteComment();">
                             <button type="submit" class="delete-icon-btn" title="Delete">
                                 <i class="fa fa-trash"></i>
                             </button>
@@ -62,4 +62,10 @@
         </div>
     </div>
 </div>
+
+<script>
+function confirmDeleteComment() {
+    return confirm("Are you sure you want to delete this comment?");
+}
+</script>
 {% endblock %}
