@@ -436,6 +436,8 @@ button {
     transition: background 0.3s ease;
     text-decoration: none;
     display: inline-block;
+    margin: 0;
+    vertical-align: middle;
 }
 
 .action-button.edit {
@@ -710,4 +712,18 @@ th {
 
 .admin-username-link:hover {
     text-decoration: underline;
+}
+
+.button-blue {
+    background: #1877f2;
+}
+
+.button-blue:hover {
+    background: #166fe5;
+}
+
+.admin-panel td form {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
 }
