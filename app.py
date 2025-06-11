@@ -3,12 +3,28 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from io import BytesIO
+import pymysql
 
 app = Flask(__name__)
 app.secret_key = 'key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/memento_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+db_name = "memento_db"
+db_user = "root"
+db_password = ""
+db_host = "localhost"
+
+connection = pymysql.connect(
+    host=db_host,
+    user=db_user,
+    password=db_password,
+    charset='utf8mb4',
+    autocommit=True
+)
+with connection.cursor() as cursor:
+    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+connection.close()
 
 # --- Model za user ---
 class User(db.Model):
