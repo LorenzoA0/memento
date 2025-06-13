@@ -79,7 +79,7 @@ class Like(db.Model):
     user = db.relationship('User', back_populates='likes')
     post = db.relationship('Post', back_populates='likes')
 
-# Kreiranje tabela
+# Kreiranje tabela i admin naloga ako ne postoji
 with app.app_context():
     db.create_all()
     # Provjera da li postoji admin nalog
